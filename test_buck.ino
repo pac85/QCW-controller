@@ -1,3 +1,20 @@
+/*
+ * Copyright 2017 Antonino Maniscalco 
+ * 
+ * QCW controller is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * QCW controller is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with Nome-Programma.  If not, see http://www.gnu.org/licenses/ .
+*/
+
 #include<MIDI.h>
 #include"synth.h"
 
@@ -95,7 +112,8 @@ void manual_mode()
     Serial.end();
   }
   mode = MANUAL;
-  if(!digitalRead(2))return;
+  
+  if(!digitalRead(2))return;      //does nothing if the trigger button is not pressd
  
   /*if(out > 255){out = 0;b = !b;digitalWrite(13,b);}
   analogWrite(6, out);
@@ -103,21 +121,22 @@ void manual_mode()
   out++;*/
   
   
-  float amplitude = analogRead(A3) / 1024.0f;
+  float amplitude = analogRead(A3) / 1024.0f; 
  
-  int dt = analogRead(A1);
+  int dt = analogRead(A1);    //is it actually the frequency
   dt /= 5;
-  int delay_ms = 20 + dt;
-  delay_ms *= 57;
+  int delay_ms = 20 + dt;     //adds a minumum 
+  delay_ms *= 57;             //compensates for messed up timing due to pwm frequency change
 
-  int rp = analogRead(A2);
+  int rp = analogRead(A2);    //ton
   int ramp_step = 5 + (rp/12);
   ramp_step /= 3;
-  
+
+  //this calculates the necessary value to add in order to get the initial voltage that starts the oscillation
   int base_value = BASE_VOLTAGE / SUPPLY_VOLTAGE * 255;
   
   for(int i = 0;i < 5;i++)
-  delay(delay_ms);
+    delay(delay_ms);
   
   analogWrite(6, base_value);
   delay(57);
@@ -182,7 +201,7 @@ void loop()
   //if(digitalRead(8))
   //  manual_mode();
   //else
-  mode = MANUAL;
-    midi_mode();
-  delay(1000);
+  mode = MIDI;
+  manual_mode();  //for now only manual mode is sported
+  //delay(1000);
 }
