@@ -72,6 +72,11 @@ void setPwmFrequency(int pin, int divisor) {
   }
 }
 
+enum 
+{
+  MIDI, MANUAL 
+} mode;
+
 void setup() 
 {
 
@@ -89,12 +94,10 @@ void setup()
   pinMode(13, OUTPUT);
   
   pinMode(2,INPUT);
-}
+  pinMode(8,INPUT);
 
-enum 
-{
-  MIDI, MANUAL 
-} mode;
+  mode = digitalRead(8) ? MANUAL : MIDI;
+}
 
 int out =0;
 bool b;
@@ -123,7 +126,7 @@ void manual_mode()
   
   float amplitude = analogRead(A3) / 1024.0f; 
  
-  int dt = analogRead(A1);    //is it actually the frequency
+  int dt = analogRead(A1);    //it is actually the frequency
   dt /= 5;
   int delay_ms = 20 + dt;     //adds a minumum 
   delay_ms *= 57;             //compensates for messed up timing due to pwm frequency change
@@ -193,15 +196,25 @@ void midi_mode()
     if((command_byte & 0b11110000) != NOTE_ON)
       return;
   }
+
+  if(!digitalRead(2))return;
+
+  float tup = 5.0f + float(analogRead(A2)) / 102.4f;    //ton in ms
+  tup = m_to_u(tup);      //converts to unit
+  float td = tup / 10.0f; //ramp down is 1/10 of ramp up
+
+  float ramp_amplitude = float(analogRead(A3)) / 1462.0f; //maximum of 0.7
+  float drum_amplitude = ramp_amplitude * 0.3f;
+
+  //float drum_ampl, float tup, float td, float base, float ramp_ampl, drum_types drumt
+  play_drum(drum_amplitude, tup, td, BASE_VOLTAGE / SUPPLY_VOLTAGE, ramp_amplitude, (drum_types)note_byte);
   
 }
 
 void loop() 
 {
-  //if(digitalRead(8))
-  //  manual_mode();
-  //else
-  mode = MIDI;
-  manual_mode();  //for now only manual mode is sported
-  //delay(1000);
+  if(digitalRead(8))
+    midi_mode();
+  else
+    manual_mode();  
 }

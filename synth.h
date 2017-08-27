@@ -1,4 +1,16 @@
 //#define PI 3.14159265f
+
+inline void f_analogWrite(float f)
+{
+  analogWrite(6, f*255);
+}
+
+//unmessed version of delayMicroseconds
+inline void u_delayMicroseconds(unsigned long int us)
+{
+  delayMicroseconds(us*57);
+}
+
 /****************************math********************************/
 inline float fract(float a)
 {
@@ -7,6 +19,8 @@ inline float fract(float a)
 }
 
 float rand(float n){return fract(sin(n) * 43758.5453123);}
+
+inline float m_to_u(float a){return a/1000.0f;}//from milli to unit
 /****************************math********************************/
 
 /*inline float decaying_sine(float frequency, float decay_rate, unsigned long time) //frequenzy in Hz and time sould start from 0 us
@@ -17,6 +31,8 @@ float rand(float n){return fract(sin(n) * 43758.5453123);}
 
 struct f_out
 {
+  f_out(){}
+  
   f_out(float a, float b)
   {
     wave = a;
@@ -58,11 +74,9 @@ inline f_out htom(float ftime)
 }
 /***************************drums*******************************/
 
-inline float ramp(float tup, float td, float base, float ampl, float ftime)   
+inline float ramp(float tup, float td, float ampl, float ftime)   
 {
-  //float ftime = float(time)/1000.0f;
-  float rawramp = ftime < tup ? ftime/tup : 1.0f - ((ftime-tup)/td);
-  return base + ampl*rawramp;
+  return max(ftime < tup ? ftime/tup : 1.0f - ((ftime-tup)/td), 0);
 }
 
 enum  drum_types
@@ -83,21 +97,151 @@ enum  drum_types
   
 };
 
-void play_drum(drum_types drumt)
+void play_drum(float drum_ampl, float tup, float td, float base, float ramp_ampl, drum_types drumt)
 {
-  float amplitude = 1.0f;
+  tup = min(m_to_u(5), tup);
+  
+  const float stop_threshold = 0.1f;    //once the function amplitude reaches this value it will stop being played 
+  const float drum_delay = m_to_u(5.0f);//after how many ms the drum sound as to start
+  //const float tup= m_to_u(10.0f), td=m_to_u(1.0f), base = 40.0f / 310.0f, ampl = ; 
+  float f_amplitude = 1.0f;             //the amplitude of the drum function
+
+  //writes initial value and waits
+  f_analogWrite(base);
+  u_delayMicroseconds(1);
+  digitalWrite(13, HIGH);
+
+  unsigned long start_time;
   switch(drumt)
   {
     case KICK:
+      start_time = micros();
+      while(f_amplitude > 0.1f)
+      {
+        //calculates time making shure that it starts from zero
+        float ftime = (micros()-start_time)/1000000;
+
+        //drum sound
+        f_out drum_r;
+        if(ftime > drum_delay)
+          drum_r = kick(ftime - drum_delay);
+        else 
+          drum_r = f_out(0.0f, 0.0f);
+          
+        //ramp
+        float ramp_r = ramp(tup, td, ramp_ampl, ftime);
+
+        //combines the two
+        float combined = drum_ampl*drum_r.wave + ramp_ampl*ramp_r;
+        //adds bias(half the drum sound amplitude unless it is less than the base voltage)
+        combined += max(base, drum_r.amplitude/2.0f); 
+
+        f_analogWrite(combined);
+      }
       break;
     case SNARE:
+      start_time = micros();
+      while(f_amplitude > 0.1f)
+      {
+        //calculates time making shure that it starts from zero
+        float ftime = (micros()-start_time)/1000000;
+
+        //drum sound
+        f_out drum_r;
+        if(ftime > drum_delay)
+          drum_r = snare(ftime - drum_delay);
+        else 
+          drum_r = f_out(0.0f, 0.0f);
+          
+        //ramp
+        float ramp_r = ramp(tup, td, ramp_ampl, ftime);
+
+        //combines the two
+        float combined = drum_ampl*drum_r.wave + ramp_ampl*ramp_r;
+        //adds bias(half the drum sound amplitude unless it is less than the base voltage)
+        combined += max(base, drum_r.amplitude/2.0f); 
+
+        f_analogWrite(combined);
+      }
       break;
     case LTOM:
+      start_time = micros();
+      while(f_amplitude > 0.1f)
+      {
+        //calculates time making shure that it starts from zero
+        float ftime = (micros()-start_time)/1000000;
+
+        //drum sound
+        f_out drum_r;
+        if(ftime > drum_delay)
+          drum_r = ltom(ftime - drum_delay);
+        else 
+          drum_r = f_out(0.0f, 0.0f);
+          
+        //ramp
+        float ramp_r = ramp(tup, td, ramp_ampl, ftime);
+
+        //combines the two
+        float combined = drum_ampl*drum_r.wave + ramp_ampl*ramp_r;
+        //adds bias(half the drum sound amplitude unless it is less than the base voltage)
+        combined += max(base, drum_r.amplitude/2.0f); 
+
+        f_analogWrite(combined);
+      }
       break;
     case LMTOM:
+      start_time = micros();
+      while(f_amplitude > 0.1f)
+      {
+        //calculates time making shure that it starts from zero
+        float ftime = (micros()-start_time)/1000000;
+
+        //drum sound
+        f_out drum_r;
+        if(ftime > drum_delay)
+          drum_r = lmtom(ftime - drum_delay);
+        else 
+          drum_r = f_out(0.0f, 0.0f);
+          
+        //ramp
+        float ramp_r = ramp(tup, td, ramp_ampl, ftime);
+
+        //combines the two
+        float combined = drum_ampl*drum_r.wave + ramp_ampl*ramp_r;
+        //adds bias(half the drum sound amplitude unless it is less than the base voltage)
+        combined += max(base, drum_r.amplitude/2.0f); 
+
+        f_analogWrite(combined);
+      }
       break;
     case HTOM:
+      start_time = micros();
+      while(f_amplitude > 0.1f)
+      {
+        //calculates time making shure that it starts from zero
+        float ftime = (micros()-start_time)/1000000;
+
+        //drum sound
+        f_out drum_r;
+        if(ftime > drum_delay)
+          drum_r = htom(ftime - drum_delay);
+        else 
+          drum_r = f_out(0.0f, 0.0f);
+          
+        //ramp
+        float ramp_r = ramp(tup, td, ramp_ampl, ftime);
+
+        //combines the two
+        float combined = drum_ampl*drum_r.wave + ramp_ampl*ramp_r;
+        //adds bias(half the drum sound amplitude unless it is less than the base voltage)
+        combined += max(base, drum_r.amplitude/2.0f); 
+
+        f_analogWrite(combined);
+      }
       break;
   }
+  digitalWrite(13, LOW);
+  u_delayMicroseconds(1);
+  f_analogWrite(0);
 }
 
