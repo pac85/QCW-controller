@@ -167,7 +167,7 @@ void midi_mode()
   if(mode != MIDI)
   {
     //do once when mode is switched
-    Serial.begin(9600);
+    Serial.begin(31250);
     //Serial.print("test");
   }
   mode = MIDI;
