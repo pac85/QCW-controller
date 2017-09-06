@@ -18,6 +18,12 @@ inline void u_delay(unsigned long int us)
   delay(us*57);
 }
 
+//unmessed version of micros
+inline unsigned long u_micros()
+{
+  return micros()/57.0f;
+}
+
 /****************************math********************************/
 inline float fract(float a)
 {
@@ -122,18 +128,18 @@ void play_drum(float drum_ampl, float tup, float td, float base, float ramp_ampl
   switch(drumt)
   {
     case KICK:
-      start_time = micros();
+      start_time = u_micros();
       while(f_amplitude > 0.1f)
       {
         //calculates time making shure that it starts from zero
-        float ftime = (micros()-start_time)/1000000;
+        float ftime = (u_micros()-start_time)/1000000;
 
         //drum sound
         f_out drum_r;
         if(ftime > drum_delay)
           drum_r = kick(ftime - drum_delay);
         else 
-          drum_r = f_out(0.0f, 0.0f);
+          drum_r = f_out(0.0f, 10.0f);
           
         //ramp
         float ramp_r = ramp(tup, td, ramp_ampl, ftime);
@@ -147,18 +153,18 @@ void play_drum(float drum_ampl, float tup, float td, float base, float ramp_ampl
       }
       break;
     case SNARE:
-      start_time = micros();
+      start_time = u_micros();
       while(f_amplitude > 0.1f)
       {
         //calculates time making shure that it starts from zero
-        float ftime = (micros()-start_time)/1000000;
+        float ftime = (u_micros()-start_time)/1000000;
 
         //drum sound
         f_out drum_r;
         if(ftime > drum_delay)
           drum_r = snare(ftime - drum_delay);
         else 
-          drum_r = f_out(0.0f, 0.0f);
+          drum_r = f_out(0.0f, 10.0f);
           
         //ramp
         float ramp_r = ramp(tup, td, ramp_ampl, ftime);
@@ -172,18 +178,18 @@ void play_drum(float drum_ampl, float tup, float td, float base, float ramp_ampl
       }
       break;
     case LTOM:
-      start_time = micros();
+      start_time = u_micros();
       while(f_amplitude > 0.1f)
       {
         //calculates time making shure that it starts from zero
-        float ftime = (micros()-start_time)/1000000;
+        float ftime = (u_micros()-start_time)/1000000;
 
         //drum sound
         f_out drum_r;
         if(ftime > drum_delay)
           drum_r = ltom(ftime - drum_delay);
         else 
-          drum_r = f_out(0.0f, 0.0f);
+          drum_r = f_out(0.0f, 10.0f);
           
         //ramp
         float ramp_r = ramp(tup, td, ramp_ampl, ftime);
@@ -197,18 +203,18 @@ void play_drum(float drum_ampl, float tup, float td, float base, float ramp_ampl
       }
       break;
     case LMTOM:
-      start_time = micros();
+      start_time = u_micros();
       while(f_amplitude > 0.1f)
       {
         //calculates time making shure that it starts from zero
-        float ftime = (micros()-start_time)/1000000;
+        float ftime = (u_micros()-start_time)/1000000;
 
         //drum sound
         f_out drum_r;
         if(ftime > drum_delay)
           drum_r = lmtom(ftime - drum_delay);
         else 
-          drum_r = f_out(0.0f, 0.0f);
+          drum_r = f_out(0.0f, 10.0f);
           
         //ramp
         float ramp_r = ramp(tup, td, ramp_ampl, ftime);
@@ -222,18 +228,18 @@ void play_drum(float drum_ampl, float tup, float td, float base, float ramp_ampl
       }
       break;
     case HTOM:
-      start_time = micros();
+      start_time = u_micros();
       while(f_amplitude > 0.1f)
       {
         //calculates time making shure that it starts from zero
-        float ftime = (micros()-start_time)/1000000;
+        float ftime = (u_micros()-start_time)/1000000;
 
         //drum sound
         f_out drum_r;
         if(ftime > drum_delay)
           drum_r = htom(ftime - drum_delay);
         else 
-          drum_r = f_out(0.0f, 0.0f);
+          drum_r = f_out(0.0f, 10.0f);
           
         //ramp
         float ramp_r = ramp(tup, td, ramp_ampl, ftime);
@@ -246,6 +252,20 @@ void play_drum(float drum_ampl, float tup, float td, float base, float ramp_ampl
         f_analogWrite(combined);
       }
       break;
+
+     default:
+      while(f_amplitude > 0.1f)
+      {
+        //calculates time making shure that it starts from zero
+        float ftime = (u_micros()-start_time)/1000000;
+        //ramp
+        float ramp_r = ramp_ampl*ramp(tup, td, ramp_ampl, ftime);
+        f_amplitude = ramp_r;
+        ramp_r += base;
+        f_analogWrite(ramp_r);
+      }
+      
+      
   }
   digitalWrite(13, LOW);
   u_delay(1);

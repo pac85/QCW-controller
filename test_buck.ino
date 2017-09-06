@@ -25,7 +25,7 @@
 
 
 
-#define NOTE_ON 0b10000000
+#define NOTE_ON 0b10010000
 
 // defines for setting and clearing register bits
 #ifndef cbi
