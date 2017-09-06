@@ -1,3 +1,4 @@
+#include <Arduino.h>
 //#define PI 3.14159265f
 
 inline void f_analogWrite(float f)
@@ -9,6 +10,12 @@ inline void f_analogWrite(float f)
 inline void u_delayMicroseconds(unsigned long int us)
 {
   delayMicroseconds(us*57);
+}
+
+//unmessed version of delay
+inline void u_delay(unsigned long int us)
+{
+  delay(us*57);
 }
 
 /****************************math********************************/
@@ -108,7 +115,7 @@ void play_drum(float drum_ampl, float tup, float td, float base, float ramp_ampl
 
   //writes initial value and waits
   f_analogWrite(base);
-  u_delayMicroseconds(1);
+  u_delay(1);
   digitalWrite(13, HIGH);
 
   unsigned long start_time;
@@ -241,7 +248,7 @@ void play_drum(float drum_ampl, float tup, float td, float base, float ramp_ampl
       break;
   }
   digitalWrite(13, LOW);
-  u_delayMicroseconds(1);
+  u_delay(1);
   f_analogWrite(0);
 }
 

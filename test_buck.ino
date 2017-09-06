@@ -15,7 +15,7 @@
  * along with Nome-Programma.  If not, see http://www.gnu.org/licenses/ .
 */
 
-#include<MIDI.h>
+//#include<MIDI.h>
 #include"synth.h"
 
 #define CHANEL 0b00001010
@@ -167,7 +167,7 @@ void midi_mode()
   if(mode != MIDI)
   {
     //do once when mode is switched
-    Serial.begin(31250);
+    Serial.begin(9600);
     //Serial.print("test");
   }
   mode = MIDI;
@@ -177,37 +177,49 @@ void midi_mode()
   byte note_byte;
   byte velocity_byte;
 
-  bool note_available= Serial.available() > 2;
+  //bool note_available= Serial.available() > 2;
 
-  do{
-    if (Serial.available()){
+  do
+  {
+    if (Serial.available())
+    {
       command_byte = Serial.read();//read first byte
       note_byte = Serial.read();//read next byte
       velocity_byte = Serial.read();//read final byte
+
+      if((command_byte & 0b00001111) != CHANEL || (command_byte & 0b11110000) != NOTE_ON || velocity_byte <= 0)
+        return;
+      
+      float tup = 5.0f + float(analogRead(A2)) / 102.4f;    //ton in ms
+      tup = m_to_u(tup);      //converts to unit
+      float td = tup / 10.0f; //ramp down is 1/10 of ramp up
+    
+      float ramp_amplitude = float(analogRead(A3)) / 1462.0f; //maximum of 0.7
+      float drum_amplitude = ramp_amplitude * 0.3f;
+    
+      //float drum_ampl, float tup, float td, float base, float ramp_ampl, drum_types drumt
+      play_drum(drum_amplitude, tup, td, BASE_VOLTAGE / SUPPLY_VOLTAGE, ramp_amplitude, (drum_types)note_byte);
+
+
+      
     }
   }
   while (Serial.available() > 2);
 
-  if(note_available)
+  //if(!note_available) return;
+
+  /*if(note_available)
   {
     if((command_byte & 0b00001111) != CHANEL)
       return;
 
     if((command_byte & 0b11110000) != NOTE_ON)
       return;
-  }
+  }*/
 
-  if(!digitalRead(2))return;
+  //if(!digitalRead(2))return;
 
-  float tup = 5.0f + float(analogRead(A2)) / 102.4f;    //ton in ms
-  tup = m_to_u(tup);      //converts to unit
-  float td = tup / 10.0f; //ramp down is 1/10 of ramp up
-
-  float ramp_amplitude = float(analogRead(A3)) / 1462.0f; //maximum of 0.7
-  float drum_amplitude = ramp_amplitude * 0.3f;
-
-  //float drum_ampl, float tup, float td, float base, float ramp_ampl, drum_types drumt
-  play_drum(drum_amplitude, tup, td, BASE_VOLTAGE / SUPPLY_VOLTAGE, ramp_amplitude, (drum_types)note_byte);
+  /**/
   
 }
 
