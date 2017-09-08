@@ -18,7 +18,7 @@
 //#include<MIDI.h>
 #include"synth.h"
 
-#define CHANEL 0b00001010
+#define CHANEL 0b00001001
 
 
 
@@ -228,5 +228,5 @@ void loop()
   if(digitalRead(8))
     midi_mode();
   else
-    manual_mode();  
+    manual_mode(); 
 }
