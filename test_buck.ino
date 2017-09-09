@@ -228,5 +228,5 @@ void loop()
   if(digitalRead(8))
     midi_mode();
   else
-    manual_mode(); 
+    manual_mode();
 }

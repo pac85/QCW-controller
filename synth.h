@@ -114,7 +114,7 @@ void play_drum(float drum_ampl, float tup, float td, float base, float ramp_ampl
 {
   tup = min(m_to_u(5), tup);
 
-  const float stop_threshold = 0.1f;    //once the function amplitude reaches this value it will stop being played
+  const float stop_threshold = 0.01f;    //once the function amplitude reaches this value it will stop being played
   const float drum_delay = m_to_u(5.0f);//after how many ms the drum sound as to start
   //const float tup= m_to_u(10.0f), td=m_to_u(1.0f), base = 40.0f / 310.0f, ampl = ;
   float f_amplitude = 1.0f;             //the amplitude of the drum function
@@ -132,7 +132,7 @@ void play_drum(float drum_ampl, float tup, float td, float base, float ramp_ampl
       while(f_amplitude > stop_threshold)
       {
         //calculates time making shure that it starts from zero
-        float ftime = (u_micros()-start_time)/1000000;
+        float ftime = (u_micros()-start_time)/1000000.0f;
 
         //drum sound
         f_out drum_r;
@@ -159,7 +159,7 @@ void play_drum(float drum_ampl, float tup, float td, float base, float ramp_ampl
       while(f_amplitude > stop_threshold)
       {
         //calculates time making shure that it starts from zero
-        float ftime = (u_micros()-start_time)/1000000;
+        float ftime = (u_micros()-start_time)/1000000.0f;
 
         //drum sound
         f_out drum_r;
@@ -186,7 +186,7 @@ void play_drum(float drum_ampl, float tup, float td, float base, float ramp_ampl
       while(f_amplitude > stop_threshold)
       {
         //calculates time making shure that it starts from zero
-        float ftime = (u_micros()-start_time)/1000000;
+        float ftime = (u_micros()-start_time)/1000000.0f;
 
         //drum sound
         f_out drum_r;
@@ -213,7 +213,7 @@ void play_drum(float drum_ampl, float tup, float td, float base, float ramp_ampl
       while(f_amplitude > stop_threshold)
       {
         //calculates time making shure that it starts from zero
-        float ftime = (u_micros()-start_time)/1000000;
+        float ftime = (u_micros()-start_time)/1000000.0f;
 
         //drum sound
         f_out drum_r;
@@ -240,7 +240,7 @@ void play_drum(float drum_ampl, float tup, float td, float base, float ramp_ampl
       while(f_amplitude > stop_threshold)
       {
         //calculates time making shure that it starts from zero
-        float ftime = (u_micros()-start_time)/1000000;
+        float ftime = (u_micros()-start_time)/1000000.0f;
 
         //drum sound
         f_out drum_r;
@@ -264,16 +264,32 @@ void play_drum(float drum_ampl, float tup, float td, float base, float ramp_ampl
       break;
 
      default:
-      while(true)
+      start_time = u_micros();
+      while(f_amplitude > stop_threshold)
       {
         //calculates time making shure that it starts from zero
-        float ftime = (u_micros()-start_time)/1000000;
+        float ftime = (u_micros()-start_time)/1000000.0f;
+
+        //drum sound
+        f_out drum_r;
+        if(ftime > drum_delay)
+          drum_r = htom(ftime - drum_delay);
+        else
+          drum_r = f_out(0.0f, 10.0f);
+
         //ramp
-        float ramp_r = ramp_ampl*ramp(tup, td, ramp_ampl, ftime);
-        ramp_r += base;
-        f_analogWrite(ramp_r);
-        if(ftime > tup+td) break;
+        float ramp_r = ramp(tup, td, ramp_ampl, ftime);
+
+        //combines the two
+        float combined = drum_ampl*drum_r.wave + ramp_ampl*ramp_r;
+        //adds bias(half the drum sound amplitude unless it is less than the base voltage)
+        combined += max(base, drum_r.amplitude/2.0f);
+
+        f_analogWrite(combined);
+
+        f_amplitude = drum_r.amplitude;
       }
+      break;
 
 
   }
