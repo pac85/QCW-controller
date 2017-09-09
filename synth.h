@@ -147,7 +147,7 @@ void play_drum(float drum_ampl, float tup, float td, float base, float ramp_ampl
         //combines the two
         float combined = drum_ampl*drum_r.wave + ramp_ampl*ramp_r;
         //adds bias(half the drum sound amplitude unless it is less than the base voltage)
-        combined += max(base, drum_r.amplitude/2.0f);
+        combined += max(base, drum_ampl*drum_r.amplitude/2.0f);
 
         f_analogWrite(combined);
 
@@ -174,7 +174,7 @@ void play_drum(float drum_ampl, float tup, float td, float base, float ramp_ampl
         //combines the two
         float combined = drum_ampl*drum_r.wave + ramp_ampl*ramp_r;
         //adds bias(half the drum sound amplitude unless it is less than the base voltage)
-        combined += max(base, drum_r.amplitude/2.0f);
+        combined += max(base, drum_ampl*drum_r.amplitude/2.0f);
 
         f_analogWrite(combined);
 
@@ -201,7 +201,7 @@ void play_drum(float drum_ampl, float tup, float td, float base, float ramp_ampl
         //combines the two
         float combined = drum_ampl*drum_r.wave + ramp_ampl*ramp_r;
         //adds bias(half the drum sound amplitude unless it is less than the base voltage)
-        combined += max(base, drum_r.amplitude/2.0f);
+        combined += max(base, drum_ampl*drum_r.amplitude/2.0f);
 
         f_analogWrite(combined);
 
@@ -228,7 +228,7 @@ void play_drum(float drum_ampl, float tup, float td, float base, float ramp_ampl
         //combines the two
         float combined = drum_ampl*drum_r.wave + ramp_ampl*ramp_r;
         //adds bias(half the drum sound amplitude unless it is less than the base voltage)
-        combined += max(base, drum_r.amplitude/2.0f);
+        combined += max(base, drum_ampl*drum_r.amplitude/2.0f);
 
         f_analogWrite(combined);
 
@@ -255,7 +255,7 @@ void play_drum(float drum_ampl, float tup, float td, float base, float ramp_ampl
         //combines the two
         float combined = drum_ampl*drum_r.wave + ramp_ampl*ramp_r;
         //adds bias(half the drum sound amplitude unless it is less than the base voltage)
-        combined += max(base, drum_r.amplitude/2.0f);
+        combined += max(base, drum_ampl*drum_r.amplitude/2.0f);
 
         f_analogWrite(combined);
 
@@ -283,7 +283,7 @@ void play_drum(float drum_ampl, float tup, float td, float base, float ramp_ampl
         //combines the two
         float combined = drum_ampl*drum_r.wave + ramp_ampl*ramp_r;
         //adds bias(half the drum sound amplitude unless it is less than the base voltage)
-        combined += max(base, drum_r.amplitude/2.0f);
+        combined += max(base, drum_ampl*drum_r.amplitude/2.0f);
 
         f_analogWrite(combined);
 
