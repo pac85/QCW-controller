@@ -195,14 +195,12 @@ void midi_mode()
       float td = tup / 10.0f; //ramp down is 1/10 of ramp up
     
       float ramp_amplitude = float(analogRead(A3)) / 1462.0f; //maximum of 0.7
-      float drum_amplitude = ramp_amplitude * 0.3f;
+      float drum_amplitude = ramp_amplitude * 0.2f;
     
       //float drum_ampl, float tup, float td, float base, float ramp_ampl, drum_types drum
-      drum_types drumt = (drum_types)note_byte;
-      drumt <<= 8;
-      drumt |= 0xf0;
+      drum_types drumt = (drum_types)note_byte << 8 ;
       play_drum(drum_amplitude, tup, td, BASE_VOLTAGE / SUPPLY_VOLTAGE, ramp_amplitude, drumt);
-
+ 
 
       
     }
