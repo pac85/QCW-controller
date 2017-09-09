@@ -198,7 +198,8 @@ void midi_mode()
       float drum_amplitude = ramp_amplitude * 0.2f;
     
       //float drum_ampl, float tup, float td, float base, float ramp_ampl, drum_types drum
-      drum_types drumt = (drum_types)note_byte << 8 ;
+      int idrumt = note_byte;
+      drum_types drumt = static_cast<drum_types>(idrumt);;
       play_drum(drum_amplitude, tup, td, BASE_VOLTAGE / SUPPLY_VOLTAGE, ramp_amplitude, drumt);
  
 
